@@ -10,7 +10,7 @@ services:
       - ${PWD}:/var/www/html:ro
 
   mysql:
-    # image: mysql:5.7
+    # mariadb по факту используется
     build: ./docker/mysql/
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
