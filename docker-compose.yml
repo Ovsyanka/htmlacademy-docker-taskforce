@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+  nginx:
+    image: nginx:1.17.2-alpine
+    networks:
+      - default
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ${PWD}:/var/www/html:ro
+
+  mysql:
+    # image: mysql:5.7
+    build: ./docker/mysql/
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+
+    volumes:
+      - "dbdata:/var/lib/mysql"
+
+  # php-fpm + исходный код приложения.
+  application:
+    # image: php:7.2-fpm-alpine
+    build:
+      context: ./docker/application/
+      dockerfile: Dockerfile
+      args:
+        - GITHUB_TOKEN
+    user: ${UID}:${GID}
+    environment:
+      # Возможно, для windows надо такой remote_host использовать
+      # XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
+      # Для linux - хост всегда доступен по этому адресу
+      XDEBUG_CONFIG: remote_host=172.17.0.1 remote_port=9000 remote_enable=1
+    volumes:
+      - ${PWD}:/var/www/html/:rw
+      # - ${PWD}/vendor:/var/www/html/vendor:rw
+      # - ${PWD}/composer.json:/var/www/html/composer.json:rw
+      # - ${PWD}/composer.lock:/var/www/html/composer.lock:rw
+      # - ${PWD}/uploads:/var/www/html/uploads:rw
+
+volumes:
+  dbdata:
