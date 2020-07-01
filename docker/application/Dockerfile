@@ -9,8 +9,7 @@ RUN apk add --no-cache $PHPIZE_DEPS \
   && pecl install xdebug-2.9.2 \
   && docker-php-ext-enable xdebug
 
-# mysqli
-RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 # needed for composer to install some packages
 RUN apk add --no-cache git
